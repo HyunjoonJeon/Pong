@@ -5,7 +5,7 @@ def send_on_jtag(cmd):
     # Taken from IP lab 4
     assert len(cmd)==1, "Make the cmd a single character"
 
-    inputCmd = "nios2-terminal <<< {}".format(cmd)
+    inputCmd = "nios2-terminal.exe <<< {}".format(cmd)
 
     # subprocess allows python to run a bash command
     output = subprocess.run(inputCmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE)
