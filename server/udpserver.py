@@ -1,33 +1,36 @@
 import socket
+def checkUDP(UDPServerSocket, bufferSize, msgFromServer="Hello UDP Client:D"): 
+    while(True): 
+        bytesToSend = str.encode(msgFromServer)
+        bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
 
-localPort = 2399
-bufferSize = 1024
+        message = bytesAddressPair[0]
 
-msgFromServer       = "Hello UDP Client:D"
-bytesToSend         = str.encode(msgFromServer)
+        address = bytesAddressPair[1]
 
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        clientMsg = "Message from Client:{}".format(message)
+        clientIP  = "Client IP Address:{}".format(address)
 
-UDPServerSocket.bind(("0.0.0.0", localPort))
+        print(clientMsg)
+        print(clientIP)
 
-print("UDP server up and listening")
+        # Sending a reply to client
 
-while(True):
-
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-
-    message = bytesAddressPair[0]
-
-    address = bytesAddressPair[1]
-
-    clientMsg = "Message from Client:{}".format(message)
-    clientIP  = "Client IP Address:{}".format(address)
-
-    print(clientMsg)
-    print(clientIP)
+        UDPServerSocket.sendto(bytesToSend, address)
 
 
+def main():
+    localPort = 2399
+    bufferSize = 1024
 
-    # Sending a reply to client
 
-    UDPServerSocket.sendto(bytesToSend, address)
+    UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+    UDPServerSocket.bind(("0.0.0.0", localPort))
+
+    print("UDP server up and listening")
+
+    checkUDP(UDPServerSocket,bufferSize)
+
+if __name__ == "__main__":
+    main()
