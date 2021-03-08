@@ -9,7 +9,7 @@ class ClientConsole():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.addressport = ("52.170.185.55", 2399)
         self.buffersize = 1024
-        self.command = 'r'
+        self.command = 'x'
         
     def send_on_jtag(self, cmd):
         # Taken from IP lab 4
@@ -33,10 +33,12 @@ class ClientConsole():
 
     def UDPsend(self):
         while True:
+            #print ("UDPsend loop <-> " , self.command)
             self.sock.sendto(str.encode(self.send_on_jtag(self.command)), self.addressport)
 
     def UDPreceive(self):
         while True:
+            #print ("UDPreceive loop")
             msgfromserver = self.sock.recvfrom(self.buffersize)
             msg = "Message from Server {}".format(msgfromserver[0])
             print(msg)
