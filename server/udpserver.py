@@ -1,5 +1,5 @@
 import socket
-def checkUDP(UDPServerSocket, bufferSize, msgFromServer="Hello UDP Client:D"): 
+def checkUDP(UDPServerSocket, bufferSize, msgFromServer="D"): 
     while(True): 
         bytesToSend = str.encode(msgFromServer)
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
