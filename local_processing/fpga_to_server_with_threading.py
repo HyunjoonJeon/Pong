@@ -47,5 +47,5 @@ class ClientConsole():
     
 if __name__ == '__main__':
     client = ClientConsole()
-    client.UDPreceive()
+    client.UDPthread()
 
