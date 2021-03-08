@@ -14,8 +14,8 @@ class ClientConsole():
     def send_on_jtag(self, cmd):
         # Taken from IP lab 4
         assert len(cmd)==1, "Make the cmd a single character"
-
-        inputCmd = "nios2-terminal <<< {}".format(cmd)
+	print("Sending", cmd)
+        inputCmd = "nios2-terminal.exe <<< {}".format(cmd)
 
         # subprocess allows python to run a bash command
         output = subprocess.run(inputCmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE)
@@ -41,7 +41,7 @@ class ClientConsole():
             msgfromserver = self.sock.recvfrom(self.buffersize)
             msg = "Message from Server {}".format(msgfromserver[0])
             print(msg)
-            self.command = msgfromserver.decode("utf-8")
+            self.command = msgfromserver[0].decode("utf-8")
     
 
     
