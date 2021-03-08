@@ -14,7 +14,6 @@ class ClientConsole():
     def send_on_jtag(self, cmd):
         # Taken from IP lab 4
         assert len(cmd)==1, "Make the cmd a single character"
-
         inputCmd = "nios2-terminal.exe <<< {}".format(cmd)
 
         # subprocess allows python to run a bash command
