@@ -101,15 +101,15 @@ int main() {
 			if(prompt == 'x')
 			{
 				alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
-				alt_printf("Raw data: <--> %x <-->\n %c", x_read, 0x4);
+				alt_printf("Raw data: <--> %x <-->\n", x_read);
 				convert_read(x_read, & level, & led);
 			}
 			else if (prompt == 'y')
 			{
 				alt_up_accelerometer_spi_read_y_axis(acc_dev, & y_read);
-				alt_printf("Raw data: <--> %x <-->\n %c", y_read, 0x4);
+				alt_printf("Raw data: <--> %x <-->\n ", y_read);
 				convert_read(y_read, & level, & led);
-			}else alt_printf("Raw data: <--> <-->\n %c", 0x4);
+			}else alt_printf("Raw data: <--> <-->\n");
 
 
 

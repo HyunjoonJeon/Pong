@@ -1,7 +1,7 @@
 import subprocess
 import socket
 import threading
-
+import os
 
 class ClientConsole():
     
@@ -11,19 +11,6 @@ class ClientConsole():
         self.buffersize = 1024
         self.command = 'x'
         
-    def send_on_jtag(self, cmd):
-        # Taken from IP lab 4
-        assert len(cmd)==1, "Make the cmd a single character"
-        inputCmd = "nios2-terminal.exe <<< {}".format(cmd)
-
-        # subprocess allows python to run a bash command
-        output = subprocess.run(inputCmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE)
-
-        vals = output.stdout
-        vals = vals.decode("utf-8")
-        vals = vals.split('<-->')
-        return vals[1].strip()
-
     def UDPthread(self):
         t1 = threading.Thread(target=self.UDPreceive)
         t2 = threading.Thread(target=self.UDPsend)
@@ -32,9 +19,27 @@ class ClientConsole():
         
 
     def UDPsend(self):
+        process = subprocess.Popen("nios2-terminal", shell=True, 
+                                    stdin=subprocess.PIPE, 
+                                    stdout=subprocess.PIPE, 
+                                    stderr=subprocess.PIPE)
         while True:
             #print ("UDPsend loop <-> " , self.command)
-            self.sock.sendto(str.encode(self.send_on_jtag(self.command)), self.addressport)
+            process.stdin.write(str.encode(self.command))
+            process.stdin.flush()
+            output = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                output = output.decode("utf-8")
+                if "exiting due to ^D on remote" in output:
+                    print("Exiting!")
+                    os._exit(1)
+                output = output.split('<-->')
+            try:
+                self.sock.sendto(str.encode(output[1].strip()),self.addressport)
+            except Exception:
+                print(output[0])
 
     def UDPreceive(self):
         while True:
