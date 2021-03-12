@@ -16,25 +16,28 @@ class ServerConsole():
         #self.sockets = set() #stores sockets in case the server wants to access them
         print("UDP Server up and listening")
 
-    def UDPthread(self, Client):
-        t1 = threading.Thread(target=self.UDPreceive, args=[Client])
-        t2 = threading.Thread(target=self.UDPsend, args=[Client])
+    def UDPthread(self, Client, address):
+        print("Thread " + str(self.threadCount) + " started")
+        t1 = threading.Thread(target=self.UDPreceive, args=[Client,address])
+        t2 = threading.Thread(target=self.UDPsend, args=[Client,address])
         t1.start()
         t2.start()
 
-    def UDPreceive(self, Client):
+    def UDPreceive(self, Client, address):
         while True:
             data, addr = Client.recvfrom(self.bufferSize)
+            assert address == addr
+            self.currClientAddress = addr
             print("Message from Client:{}".format(data))
             print("Client IP Address:{}".format(addr))
     
-    def UDPsend(self, Client, msgFromServer="Test"):
+    def UDPsend(self, Client, address, msgFromServer="Test"):
         while True:
             #msgFromServer = input()
-            if self.currClientAddress != "empty":
-                bytesToSend = str.encode(msgFromServer)
-                Client.send(bytesToSend)
-                time.sleep(3)
+            #if self.currClientAddress != "empty":
+            bytesToSend = str.encode(msgFromServer)
+            Client.sendto(bytesToSend, address)
+            time.sleep(3)
 
     def UDPserver(self):
         while True:
@@ -48,10 +51,10 @@ class ServerConsole():
                 newSock.bind(("0.0.0.0",self.localPort))
                 self.sock.sendto(str.encode(str(self.localPort)), address)
                 #_thread.start_new_thread(self.UDPthread, (newSock, ))
-                primary = threading.Thread(target=self.UDPthread, args=[newSock])
+                primary = threading.Thread(target=self.UDPthread, args=[newSock, address])
                 primary.start()
                 self.threadCount += 1
-                print("Thread Number: " + str(self.threadCount))
+                #print("Thread Number: " + str(self.threadCount))
 
 if __name__ == "__main__":
     server = ServerConsole()
