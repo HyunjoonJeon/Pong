@@ -31,6 +31,8 @@
 alt_8 pwm = 0;
 alt_u8 led;
 int level;
+int filter_slot=0;
+double filter[5]={0,0,0,0,0};
 
 void led_write(alt_u8 led_pattern) {
     IOWR(LED_BASE, 0, led_pattern);
@@ -77,7 +79,23 @@ void timer_init(void * isr) {
 
 }
 
+double filtering(alt_32 current_value){
+	double result=0;
+	filter[filter_slot]=current_value;
+	for(int i=0; i<5;i++){
+		result += filter[i]/5;
+		printf("Array data: %f \n", filter[i]);
+	}
+	if (filter_slot<4){
+		filter_slot++;
+	}else{
+		filter_slot=0;
+	}
+	return result;
+}
+
 int main() {
+	double filtered_data;
 	alt_32 x_read, y_read;
     alt_up_accelerometer_spi_dev * acc_dev;
     acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
@@ -101,8 +119,10 @@ int main() {
 			if(prompt == 'x')
 			{
 				alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
-				alt_printf("Raw data: <--> %x <-->\n", x_read);
+				alt_printf("Raw data: %x \n", x_read);
 				convert_read(x_read, & level, & led);
+				filtered_data = filtering(x_read);
+				printf("Filtered data: <--> %f <-->\n", filtered_data);
 			}
 			else if (prompt == 'y')
 			{
@@ -110,12 +130,6 @@ int main() {
 				alt_printf("Raw data: <--> %x <-->\n ", y_read);
 				convert_read(y_read, & level, & led);
 			}else alt_printf("Raw data: <--> <-->\n");
-
-
-
-			/*if (ferror(fp)) {
-				clearerr(fp);
-			}*/
 		}
 		fprintf(fp, "Closing the JTAG UART file handle.\n %c",0x4);
 		fclose(fp);
