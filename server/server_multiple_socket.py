@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+import errno
 #import _thread
 
 class ServerConsole():
@@ -30,11 +31,14 @@ class ServerConsole():
             try:
                 data, addr = Client.recvfrom(self.bufferSize)
                 print(f"Skipped Receive on thread {threadcount}")
-            except socket.error:
-                if(time.time()>rectime+10):
-                    self.threadKill = Client
-                    print(f"Killed Receive Thread {threadcount}")
-                    return
+            except socket.error as e:
+                err = e.args[0]
+                if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+                    if(time.time()>rectime+10):
+                        self.threadKill = Client
+                        print(f"Killed Receive Thread {threadcount}")
+                        return
+                    else: continue
                 else:
                     continue
             else:
