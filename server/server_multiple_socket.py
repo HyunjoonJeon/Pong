@@ -29,8 +29,9 @@ class ServerConsole():
             rectime = time.time()
             try:
                 data, addr = Client.recvfrom(self.bufferSize)
+                print(f"Skipped Receive on thread {threadcount}")
             except socket.error:
-                if(time.time()>rectime+60):
+                if(time.time()>rectime+10):
                     self.threadKill = Client
                     print(f"Killed Receive Thread {threadcount}")
                     return
