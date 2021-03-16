@@ -37,7 +37,7 @@ class ServerConsole():
                 print(f"killing thread {threadCount} UDPreceive")
                 return
             else:
-                socketio.emit('Server Response',data+" from "+addr, broadcast = True)
+                socketio.emit('my_response',{'data' : "{}".format(data), 'count' : addr}, broadcast = True)
 
     def UDPsend(self, Client, address, t1, threadCount, msgFromServer="Test"):
         while True:
@@ -64,9 +64,6 @@ class ServerConsole():
                 primary.start()
                 self.threadCount += 1
 
-if __name__ == "__main__":
-    server = ServerConsole()
-    server.UDPserver()
 
 @socketio.on("connect")
 def connect():
@@ -82,8 +79,8 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    udpserver = ServerConsole()
-    udpServer = threading.Thread(target=udpServer.UDPserver)
+    udpxServer = ServerConsole()
+    udpServer = threading.Thread(target=udpxServer.UDPserver)
     udpServer.daemon = True
     udpServer.start()
 
