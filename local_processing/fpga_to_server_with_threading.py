@@ -57,7 +57,7 @@ class ClientConsole():
         connectmsg = "Connect"
         self.sock.sendto(str.encode(connectmsg), self.addressport)
         newaddressport = self.sock.recvfrom(self.buffersize)
-        self.addressport = ("52.170.185.55", int(newaddressport.decode("utf-8")))
+        self.addressport = ("52.170.185.55", int(newaddressport[0].decode("utf-8")))
         self.UDPthread()
 
 
