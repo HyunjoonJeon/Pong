@@ -4,8 +4,9 @@
     <title>Flask-SocketIO Test</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function() {
+    <script type = "text/javascript">var control = 0;</script>
+    <script type = "text/javascript" charset="utf-8">
+	$(document).ready(function() {
             // Connect to the Socket.IO server.
             // The connection URL has the following format, relative to the current page:
             //     http[s]://<domain>:<port>[/<namespace>]
@@ -24,6 +25,8 @@
             // section of the page.
             socket.on('my_response', function(msg, cb) {
                 $('#log').prepend('<br>' + $('<div/>').text('Received # ' + msg.count + ': ' + msg.data).html());
+                control = parseFloat(msg.data.substring(2,msg.data.length-1));
+		console.log({control});
                 if (cb)
                     cb();
             });
@@ -53,6 +56,13 @@
         });
     </script>
 </head>
+<body>
+
+  <canvas></canvas>
+
+  <script type="text/javascript" src="{{ url_for('static', filename = 'pong.js') }}"></script>
+
+</body>
 <body>
     <h1>Flask-SocketIO Test</h1>
     <p>Async mode is: <b>{{ async_mode }}</b></p>
