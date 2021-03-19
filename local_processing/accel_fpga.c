@@ -119,7 +119,7 @@ int main() {
 			if(prompt == 'x')
 			{
 				alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
-				alt_printf("Raw data: %x \n", x_read);
+				alt_printf("Raw data:  %x \n", x_read);
 				convert_read(x_read, & level, & led);
 				filtered_data = filtering(x_read);
 				printf("Filtered data: <--> %f <-->\n", filtered_data);
