@@ -39,7 +39,7 @@ class ServerConsole():
             else:
                 socketio.emit('my_response',{'data' : "{}".format(data), 'count' : addr}, broadcast = True)
 
-    def UDPsend(self, Client, address, t1, threadCount, msgFromServer="Test"):
+    def UDPsend(self, Client, address, t1, threadCount, msgFromServer="x"):
         while True:
             #msgFromServer = input()
             bytesToSend = str.encode(msgFromServer)
@@ -77,6 +77,11 @@ def disconnect():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@socketio.event
+def my_ping():
+    emit('my_pong')
+
 
 if __name__ == '__main__':
     udpxServer = ServerConsole()
