@@ -19,13 +19,13 @@ class ServerConsole():
         self.playerCount = 0 #number of players in the game (MAX 2)
         self.connectQueue = queue.Queue() #create a queue system
         self.currentThreads = [(), ()] #list with top two addresses
-        self.currentVals = [0, 0] #list with most recent values
+        self.currentVals = ["0", "0"] #list with most recent values
         print("UDP Server up and listening")
         tcal = threading.Thread(target=self.UDPcalculate, args=[])
         tcal.start()
 
     def UDPthread(self, Client, address, threadCount):
-        print("Thread " + str(self.threadCount) + " started")
+        print("Thread " + str(threadCount) + " started")
         t1 = threading.Thread(target=self.UDPreceive, args=[Client, address, threadCount])
         t1.start()
         t2 = threading.Thread(target=self.UDPsend, args=[Client, address, t1, threadCount])
@@ -33,7 +33,7 @@ class ServerConsole():
 
     def UDPdisconnect(self, Client, address , threadCount):
         self.playerCount -= 1
-        self.currentVals[threadCount-1] = 0
+        self.currentVals[threadCount-1] = "0"
         self.currentThreads[threadCount-1] = ()
         if not self.connectQueue.empty():
             address = self.connectQueue.get()
@@ -64,7 +64,7 @@ class ServerConsole():
 
     def UDPcalculate(self):
         while True:
-            if self.currentVals[0] and self.currentVals[1]: #list not empty
+            if self.currentVals[0] and self.currentVals[1] is not "0": #list not empty
                 data = self.currentVals[0] + self.currentVals[1]
                 socketio.emit('my_response',{'data' : data, 'count' : addr}, broadcast = True)
                             
@@ -84,9 +84,9 @@ class ServerConsole():
             print("Connected to:{}".format(address))
             if(self.playerCount < 2):
                 threadCount = 0
-                if self.currentVals[0]:
+                if self.currentVals[0] is "0":
                     threadCount = 1
-                elif self.currentVals[1]:
+                elif self.currentVals[1] is "0":
                     threadCount = 2
                 newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
