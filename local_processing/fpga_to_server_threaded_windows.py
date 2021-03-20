@@ -8,7 +8,7 @@ class ClientConsole():
     
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.addressport = ("40.121.3.218", 2399)
+        self.addressport = ("51.145.12.252", 2399)
         self.buffersize = 1024
         self.command = 'x'
         
@@ -57,7 +57,7 @@ class ClientConsole():
         connectmsg = "Connect"
         self.sock.sendto(str.encode(connectmsg), self.addressport)
         newaddressport = self.sock.recvfrom(self.buffersize)
-        self.addressport = ("40.121.3.218", int(newaddressport[0].decode("utf-8")))
+        self.addressport = ("51.145.12.252", int(newaddressport[0].decode("utf-8")))
         self.UDPthread()
 
 
