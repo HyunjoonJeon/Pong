@@ -3,6 +3,7 @@ import socket
 import threading
 import os
 import sys
+import signal
 
 class ClientConsole():
     
@@ -18,7 +19,6 @@ class ClientConsole():
         t1.start()
         t2.start()
         
-
     def UDPsend(self):
         process = subprocess.Popen("nios2-terminal.exe", shell=True, 
                                     stdin=subprocess.PIPE, 
@@ -41,9 +41,6 @@ class ClientConsole():
                 self.sock.sendto(str.encode(output[1].strip()),self.addressport)
             except Exception:
                 print(output[0])
-            except (KeyboardInterrupt, SystemExit):
-                self.sock.sendto(str.encode("d"), self.addressport)
-                sys.exit()
 
     def UDPreceive(self):
         while True:
@@ -60,13 +57,15 @@ class ClientConsole():
         self.addressport = ("51.145.12.252", int(newaddressport[0].decode("utf-8")))
         self.UDPthread()
 
-
-
-
+    def UDPdisconnect(self, signal, frame):
+        self.sock.sendto(str.encode("d"), self.addressport)
+        exit(0)
+        
     
 
     
 if __name__ == '__main__':
     client = ClientConsole()
     client.UDPconnect()
+    signal.signal(signal.SIGINT, client.UDPdisconnect)
 
