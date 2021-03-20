@@ -24,26 +24,27 @@ class ClientConsole():
                                     stdin=subprocess.PIPE, 
                                     stdout=subprocess.PIPE, 
                                     stderr=subprocess.PIPE)
-        while True:
-            #print ("UDPsend loop <-> " , self.command)
-            process.stdin.write(str.encode(self.command))
-            process.stdin.flush()
-            output = process.stdout.readline()
-            if process.poll() is not None:
-                break
-            if output:
-                output = output.decode("utf-8")
-                if "exiting due to ^D on remote" in output:
-                    print("Exiting!")
-                    os._exit(1)
-                output = output.split('<-->')
-            try:
-                self.sock.sendto(str.encode(output[1].strip()),self.addressport)
-            except Exception:
-                print(output[0])
-            except (KeyboardInterrupt, SystemExit):
-                self.sock.sendto(str.encode("d"), self.addressport)
-                sys.exit()
+        try:
+            while True:
+                #print ("UDPsend loop <-> " , self.command)
+                process.stdin.write(str.encode(self.command))
+                process.stdin.flush()
+                output = process.stdout.readline()
+                if process.poll() is not None:
+                    break
+                if output:
+                    output = output.decode("utf-8")
+                    if "exiting due to ^D on remote" in output:
+                        print("Exiting!")
+                        os._exit(1)
+                    output = output.split('<-->')
+                try:
+                    self.sock.sendto(str.encode(output[1].strip()),self.addressport)
+                except Exception:
+                    print(output[0])
+        except (KeyboardInterrupt, SystemExit):
+            self.sock.sendto(str.encode("d"), self.addressport)
+            sys.exit()
 
     def UDPreceive(self):
         while True:
