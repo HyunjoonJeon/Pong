@@ -66,7 +66,7 @@ class ServerConsole():
         while True:
             if self.currentVals[0] and self.currentVals[1] is not "0": #list not empty
                 data = self.currentVals[0] + self.currentVals[1]
-                socketio.emit('my_response',{'data' : data, 'count' : addr}, broadcast = True)
+                socketio.emit('my_response',{'data' : data, 'count' : "test"}, broadcast = True)
                             
     def UDPsend(self, Client, address, t1, threadCount, msgFromServer="x"):
         while True:
@@ -98,7 +98,7 @@ class ServerConsole():
                 self.playerCount += 1
                 self.currentThreads[threadCount-1] = (newSock, address)
             else:
-                connectQueue.put(address) #first in first out
+                self.connectQueue.put(address) #first in first out
 
 
 @socketio.on("connect")
