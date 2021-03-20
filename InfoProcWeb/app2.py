@@ -24,14 +24,14 @@ class ServerConsole():
         tcal = threading.Thread(target=self.UDPcalculate, args=[])
         tcal.start()
 
-    def UDPthread(self, (Client, address), threadCount):
+    def UDPthread(self, Client, address, threadCount):
         print("Thread " + str(self.threadCount) + " started")
-        t1 = threading.Thread(target=self.UDPreceive, args=[(Client, address), threadCount])
+        t1 = threading.Thread(target=self.UDPreceive, args=[Client, address, threadCount])
         t1.start()
-        t2 = threading.Thread(target=self.UDPsend, args=[(Client, address), t1, threadCount])
+        t2 = threading.Thread(target=self.UDPsend, args=[Client, address, t1, threadCount])
         t2.start()
 
-    def UDPdisconnect(self, (Client, address) , threadCount):
+    def UDPdisconnect(self, Client, address , threadCount):
         self.playerCount -= 1
         self.currentVals[threadCount-1] = 0
         self.currentThreads[threadCount-1] = ()
@@ -42,14 +42,14 @@ class ServerConsole():
                 self.localPort += 1
                 newSock.bind(("0.0.0.0",self.localPort))
                 self.sock.sendto(str.encode(str(self.localPort)), address)
-                primary = threading.Thread(target=self.UDPthread, args=[(newSock, address), self.threadCount])
+                primary = threading.Thread(target=self.UDPthread, args=[newSock, address, self.threadCount])
                 primary.start()
                 self.playerCount += 1
                 self.currentThreads[threadCount - 1] = (newSock, address)
         
 
 
-    def UDPreceive(self, (Client, address) , threadCount):
+    def UDPreceive(self, Client, address , threadCount):
         while True:
             data, addr = Client.recvfrom(self.bufferSize)
             assert address == addr
@@ -93,7 +93,7 @@ class ServerConsole():
                 self.localPort += 1
                 newSock.bind(("0.0.0.0",self.localPort))
                 self.sock.sendto(str.encode(str(self.localPort)), address)
-                primary = threading.Thread(target=self.UDPthread, args=[(newSock, address), threadCount])
+                primary = threading.Thread(target=self.UDPthread, args=[newSock, address, threadCount])
                 primary.start()
                 self.playerCount += 1
                 self.currentThreads[threadCount-1] = (newSock, address)
