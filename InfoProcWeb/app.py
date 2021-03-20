@@ -42,12 +42,10 @@ class ServerConsole():
             self.localPort += 1
             newSock.bind(("0.0.0.0",self.localPort))
             self.sock.sendto(str.encode(str(self.localPort)), address)
-            primary = threading.Thread(target=self.UDPthread, args=[newSock, address, self.threadCount])
+            primary = threading.Thread(target=self.UDPthread, args=[newSock, address, threadCount])
             primary.start()
             self.playerCount += 1
             self.currentThreads[threadCount - 1] = (newSock, address)
-        
-
 
     def UDPreceive(self, Client, address , threadCount):
         while True:
@@ -100,7 +98,6 @@ class ServerConsole():
             else:
                 self.connectQueue.put(address) #first in first out
 
-
 @socketio.on("connect")
 def connect():
     print("Client connected", request.sid)
@@ -117,7 +114,6 @@ def index():
 @socketio.event
 def my_ping():
     emit('my_pong')
-
 
 if __name__ == '__main__':
     udpxServer = ServerConsole()
