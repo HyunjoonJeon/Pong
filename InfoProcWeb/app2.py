@@ -64,7 +64,7 @@ class ServerConsole():
 
     def UDPcalculate(self):
         while True:
-            if self.currentVals[0] and self.currentVals[1] is not "0": #list not empty
+            if self.currentVals[0] and self.currentVals[1] != "0": #list not empty
                 data = self.currentVals[0] + self.currentVals[1]
                 socketio.emit('my_response',{'data' : data, 'count' : "test"}, broadcast = True)
                             
@@ -84,9 +84,9 @@ class ServerConsole():
             print("Connected to:{}".format(address))
             if(self.playerCount < 2):
                 threadCount = 0
-                if self.currentVals[0] is "0":
+                if self.currentVals[0] == "0":
                     threadCount = 1
-                elif self.currentVals[1] is "0":
+                elif self.currentVals[1] == "0":
                     threadCount = 2
                 newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
