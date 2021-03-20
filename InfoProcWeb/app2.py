@@ -35,17 +35,17 @@ class ServerConsole():
         self.playerCount -= 1
         self.currentVals[threadCount-1] = 0
         self.currentThreads[threadCount-1] = ()
-            if not self.connectQueue.empty():
-                address = self.connectQueue.get()
-                newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)K_DGRAM)
-                newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                self.localPort += 1
-                newSock.bind(("0.0.0.0",self.localPort))
-                self.sock.sendto(str.encode(str(self.localPort)), address)
-                primary = threading.Thread(target=self.UDPthread, args=[newSock, address, self.threadCount])
-                primary.start()
-                self.playerCount += 1
-                self.currentThreads[threadCount - 1] = (newSock, address)
+        if not self.connectQueue.empty():
+            address = self.connectQueue.get()
+            newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)K_DGRAM)
+            newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.localPort += 1
+            newSock.bind(("0.0.0.0",self.localPort))
+            self.sock.sendto(str.encode(str(self.localPort)), address)
+            primary = threading.Thread(target=self.UDPthread, args=[newSock, address, self.threadCount])
+            primary.start()
+            self.playerCount += 1
+            self.currentThreads[threadCount - 1] = (newSock, address)
         
 
 
