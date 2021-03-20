@@ -57,14 +57,14 @@ class ServerConsole():
             print("Client IP Address:{}".format(addr))
             if "{}".format(data) == "b'd'":
                 print(f"killing thread {threadCount} UDPreceive")
-                self.UDPdisconnect((Client, address) , threadCount)
+                self.UDPdisconnect(Client, address , threadCount)
                 return
             else:
                 self.currentVals[threadCount-1] = "{}".format(data)
 
     def UDPcalculate(self):
         while True:
-            if self.currentVals[0] or self.currentVals[1] is not "0": #list not empty
+            if self.currentVals[0] and self.currentVals[1] is not "0": #list not empty
                 data = self.currentVals[0] + self.currentVals[1]
                 socketio.emit('my_response',{'data' : data, 'count' : "test"}, broadcast = True)
                             
