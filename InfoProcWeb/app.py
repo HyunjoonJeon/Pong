@@ -76,12 +76,13 @@ class ServerConsole():
         ballDirectionY = 0
         while True:
             if self.currentVals[0] and self.currentVals[1] != "0": #list not empty
-                p1currentspd = int(self.currentVals[0])
-                p2currentspd =int(self.currentVals[1])
+                p1currentspd = float(self.currentVals[0][2: -1])
+                p2currentspd =float(self.currentVals[1][2: -1])
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
+                print(ballposx, ballposy, ballDirectionX, ballDirectionY)
                 data_set = {"p1currentposy": p1currentposy, "p2currentposy": p2currentposy, "ballposx": ballposx, "ballposy": ballposy, "score": [score[0], score[1]], "over": over}
                 data = json.dumps(data_set)
-                socketio.emit('my_response',data, broadcast = True)
+                socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
                 if roundstart:
                     time.sleep(10)
 
@@ -133,8 +134,14 @@ class ServerConsole():
 			#On new serve (start of each turn) move the ball to the correct side
 			#and randomize the direction to add some challenge.
             if roundstart:
-                ballDirectionX = (score[0]+score[1])%2 if Direction.LEFT else Direction.RIGHT
-                ballDirectionY = round(random.uniform(0, 1)) if Direction.UP else Direction.DOWN
+                if (score[0]+score[1])%2:
+                    ballDirectionX = Direction.LEFT
+                else:
+                    ballDirectionX = Direction.RIGHT
+                if round(random.uniform(0, 1)):
+                    ballDirectionY = Direction.UP
+                else:
+                    ballDirectionY = Direction.DOWN
                 ballposy = math.floor(random.uniform(0, 1) * canvasHeight - 200) + 200
                 roundstart = False
 
@@ -149,9 +156,11 @@ class ServerConsole():
                 p2currentposy = (canvasHeight - paddleHeight)
 			
             #Move ball in intended direction based on moveY and moveX values
-            if ballDirectionY == Direction.UP:
+            if ballDirectionY == 1:
+                print(ballSpeed)
                 ballposy -= ballSpeed / 1.5
-            elif ballDirectionY == Direction.DOWN:
+            elif ballDirectionY == 2:
+                print(ballSpeed)
                 ballposy += ballSpeed / 1.5
             if ballDirectionX == Direction.LEFT:
                 ballposx -= ballSpeed
@@ -200,6 +209,7 @@ class ServerConsole():
         while True:
             message, address = self.sock.recvfrom(self.bufferSize)
             print("Connected to:{}".format(address))
+            print(self.playerCount)
             if(self.playerCount < 2):
                 threadCount = 0
                 if self.currentVals[0] == "0":
