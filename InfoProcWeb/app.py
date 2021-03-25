@@ -87,12 +87,6 @@ class ServerConsole():
                     time.sleep(10)
 
     def UDPupdate(self, p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart):
-        class Direction(Enum):
-            IDLE = 0
-            UP = 1
-            DOWN = 2
-            LEFT = 3
-            RIGHT = 4
         canvasWidth = 1400
         canvasHeight = 1000
         ballWidth = 18
@@ -117,9 +111,9 @@ class ServerConsole():
                 return p1currentspd, p2currentspd, ballposx, ballposy, score, roundstart
                 # reset
             if ballposy <= 0:
-                ballDirectionY = Direction.DOWN
+                ballDirectionY = 2
             elif ballposy >= canvasHeight - ballHeight:
-                ballDirectionY = Direction.UP
+                ballDirectionY = 1
 
 			#Move players if they player.move value was updated by a keyboard event
             if p1currentspd!=0:
@@ -135,13 +129,13 @@ class ServerConsole():
 			#and randomize the direction to add some challenge.
             if roundstart:
                 if (score[0]+score[1])%2:
-                    ballDirectionX = Direction.LEFT
+                    ballDirectionX = 3
                 else:
-                    ballDirectionX = Direction.RIGHT
+                    ballDirectionX = 4
                 if round(random.uniform(0, 1)):
-                    ballDirectionY = Direction.UP
+                    ballDirectionY = 1
                 else:
-                    ballDirectionY = Direction.DOWN
+                    ballDirectionY = 2
                 ballposy = math.floor(random.uniform(0, 1) * canvasHeight - 200) + 200
                 roundstart = False
 
@@ -162,23 +156,23 @@ class ServerConsole():
             elif ballDirectionY == 2:
                 print(ballSpeed)
                 ballposy += ballSpeed / 1.5
-            if ballDirectionX == Direction.LEFT:
+            if ballDirectionX == 3:
                 ballposx -= ballSpeed
-            elif ballDirectionX == Direction.RIGHT:
+            elif ballDirectionX == 4:
                 ballposx += ballSpeed
 
 			#Handle Player1-Ball collisions
             if ballposx - ballWidth <= p1currentposx and ballposx >= p1currentposx - paddleWidth:
                 if ballposy <= p1currentposy + paddleHeight and ballposy + ballHeight >= p1currentposy:
                     ballposx = p1currentposx + ballWidth
-                    ballDirectionX = Direction.RIGHT
+                    ballDirectionX = 4
 					#beep1.play()
 
             #Handle Player2-Ball collision
             if ballposx - ballWidth <= p2currentposx and ballposx >= p2currentposx - paddleWidth:
                 if ballposy <= p2currentposy + paddleHeight and ballposy + ballHeight >= p2currentposy:
                     ballposx = p2currentposx - ballWidth
-                    ballDirectionX = Direction.LEFT
+                    ballDirectionX = 3
 					#beep1.play()
 
         if score[0] or score[1] == 5:
