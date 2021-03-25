@@ -26,7 +26,6 @@ class ClientConsole():
                                     stdout=subprocess.PIPE, 
                                     stderr=subprocess.PIPE)
         while True:
-            time.sleep(1/120)
             #print ("UDPsend loop <-> " , self.command)
             process.stdin.write(str.encode(self.command))
             process.stdin.flush()

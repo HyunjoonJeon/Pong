@@ -75,12 +75,14 @@ class ServerConsole():
         ballDirectionX = 0
         ballDirectionY = 0
         while True:
-            time.sleep(0.03)
+            time.sleep(0.1)
             if self.currentVals[0] and self.currentVals[1] != "0": #list not empty
-                p1currentspd = float(self.currentVals[0][2: -1])/3
-                p2currentspd =float(self.currentVals[1][2: -1])/3
+                p1currentspd = float(self.currentVals[0][2: -1])/6
+                p2currentspd =float(self.currentVals[1][2: -1])/6
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
                 print(ballposx, ballposy, ballDirectionX, ballDirectionY)
+                data_set = {"p1currentposy": p1currentposy, "p2currentposy": p2currentposy, "ballposx": ballposx, "ballposy": ballposy, "score": [score[0], score[1]], "over": over}
+                data = json.dumps(data_set)
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
                 if roundstart:
                     time.sleep(2)
@@ -90,7 +92,7 @@ class ServerConsole():
         canvasHeight = 1000
         ballWidth = 18
         ballHeight = 18
-        ballSpeed = 9 
+        ballSpeed = 12 
         paddleWidth = 18
         paddleHeight = 70
         p1currentposx = 150
@@ -130,7 +132,7 @@ class ServerConsole():
 			#On new serve (start of each turn) move the ball to the correct side
 			#and randomize the direction to add some challenge.
             if roundstart:
-                if (score[0]+score[1])%2:
+                if round(random.uniform(0, 1)):
                     ballDirectionX = 3
                 else:
                     ballDirectionX = 4
@@ -138,7 +140,6 @@ class ServerConsole():
                     ballDirectionY = 1
                 else:
                     ballDirectionY = 2
-                ballposy = math.floor(random.uniform(0, 1) * canvasHeight - 200) + 200
                 roundstart = False
 
 			#If the players collide with the bound limits, update the x and y coords.
@@ -177,7 +178,7 @@ class ServerConsole():
                     ballDirectionX = 3
 					#beep1.play()
 
-        if score[0] or score[1] == 5:
+        if (score[0] ==5) or (score[1] == 5):
             over = True
 
         return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
