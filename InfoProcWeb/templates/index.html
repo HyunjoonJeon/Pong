@@ -4,7 +4,7 @@
     <title>Flask-SocketIO Test</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
-    <script type = "text/javascript">var p1currentposy = 0; var p2currentposy =0; var ballposx =0; var ballposy=0; var over=false; var p1score = 0; var p2score=0; </script>
+    <script type = "text/javascript">var p1currentposy = 0; var p2currentposy =0; var ballposx =0; var ballposy=0; var serverOver=false; var p1score = 0; var p2score=0; </script>
     <script type = "text/javascript" charset="utf-8">
 	$(document).ready(function() {
             // Connect to the Socket.IO server.
@@ -31,7 +31,7 @@
 		ballposy = parseFloat(data.ballposy);
 		p1score = parseFloat(data.score[0]);
 		p2score = parseFloat(data.score[1]);
-		over = data.over == 'true';
+		serverOver = data.over == 'true';
 		console.log({control});
                 if (cb)
                     cb();
