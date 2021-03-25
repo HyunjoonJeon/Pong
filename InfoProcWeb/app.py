@@ -67,7 +67,7 @@ class ServerConsole():
     def UDPcalculate(self):
         p1currentposy = 215
         p2currentposy = 215
-        score = (0,0)
+        score = [0,0]
         ballposx = 691
         ballposy = 491
         over = False
@@ -75,23 +75,24 @@ class ServerConsole():
         ballDirectionX = 0
         ballDirectionY = 0
         while True:
+            time.sleep(0.1)
             if self.currentVals[0] and self.currentVals[1] != "0": #list not empty
-                p1currentspd = float(self.currentVals[0][2: -1])
-                p2currentspd =float(self.currentVals[1][2: -1])
+                p1currentspd = float(self.currentVals[0][2: -1])/3
+                p2currentspd =float(self.currentVals[1][2: -1])/3
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
                 print(ballposx, ballposy, ballDirectionX, ballDirectionY)
                 data_set = {"p1currentposy": p1currentposy, "p2currentposy": p2currentposy, "ballposx": ballposx, "ballposy": ballposy, "score": [score[0], score[1]], "over": over}
                 data = json.dumps(data_set)
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
                 if roundstart:
-                    time.sleep(10)
+                    time.sleep(2)
 
     def UDPupdate(self, p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart):
         canvasWidth = 1400
         canvasHeight = 1000
         ballWidth = 18
         ballHeight = 18
-        ballSpeed = 9
+        ballSpeed = 9 
         paddleWidth = 18
         paddleHeight = 70
         p1currentposx = 150
@@ -99,16 +100,19 @@ class ServerConsole():
         if not over:
             #If the ball collides with the bound limits - correct the x and y coords.
             if ballposx <= 0:
+                print(roundstart)
                 score[0] += 1
-                (p1currentspd, p2currentspd, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
+                (p1currentposy, p2currentposy, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
                 roundstart = True
-                return p1currentspd, p2currentspd, ballposx, ballposy, score, roundstart
+                return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
                 # reset
             elif ballposx >= canvasWidth - ballWidth:
+                print(roundstart)
                 score[1] += 1
-                (p1currentspd, p2currentspd, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
+                (p1currentposy, p2currentposy, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
                 roundstart = True
-                return p1currentspd, p2currentspd, ballposx, ballposy, score, roundstart
+                return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
+                # reset
                 # reset
             if ballposy <= 0:
                 ballDirectionY = 2
@@ -182,8 +186,9 @@ class ServerConsole():
     
     def UDPreset(self, p1score, p2score):
         p1currentposy = 215
+        print("I am resetting")
         p2currentposy = 215
-        score = (p1score,p2score)
+        score = [p1score,p2score]
         ballposx = 691
         ballposy = 491
         return (p1currentposy, p2currentposy, ballposx, ballposy, score)

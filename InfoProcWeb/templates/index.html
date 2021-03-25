@@ -25,12 +25,12 @@
             // section of the page.
             socket.on('my_response', function(msg, cb) {
                 $('#log').prepend('<br>' + $('<div/>').text('Received # ' + msg.count + ': ' + msg.data).html());
-                p1currentposy = parseFloat(msg.p1currentposy);
-		p2currentposy = parseFloat(msg.p2currentposy);
-		ballposx = parseFloat(msg.ballposx);
-		ballposy = parseFloat(msg.ballposy);
-		p1score = parseFloat(msg.score[0]);
-		p2score = parseFloat(msg.score[1]);
+                p1currentposy = parseInt(msg.p1currentposy);
+		p2currentposy = parseInt(msg.p2currentposy);
+		ballposx = parseInt(msg.ballposx);
+		ballposy = parseInt(msg.ballposy);
+		p1score = parseInt(msg.score[0]);
+		p2score = parseInt(msg.score[1]);
 		serverOver = msg.over == 'true';
 		console.log({ballposx, ballposy});
                 if (cb)
