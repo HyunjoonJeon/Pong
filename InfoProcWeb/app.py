@@ -75,14 +75,12 @@ class ServerConsole():
         ballDirectionX = 0
         ballDirectionY = 0
         while True:
-            time.sleep(0.1)
+            time.sleep(0.03)
             if self.currentVals[0] and self.currentVals[1] != "0": #list not empty
                 p1currentspd = float(self.currentVals[0][2: -1])/3
                 p2currentspd =float(self.currentVals[1][2: -1])/3
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
                 print(ballposx, ballposy, ballDirectionX, ballDirectionY)
-                data_set = {"p1currentposy": p1currentposy, "p2currentposy": p2currentposy, "ballposx": ballposx, "ballposy": ballposy, "score": [score[0], score[1]], "over": over}
-                data = json.dumps(data_set)
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
                 if roundstart:
                     time.sleep(2)
@@ -101,14 +99,14 @@ class ServerConsole():
             #If the ball collides with the bound limits - correct the x and y coords.
             if ballposx <= 0:
                 print(roundstart)
-                score[0] += 1
+                score[1] += 1
                 (p1currentposy, p2currentposy, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
                 roundstart = True
                 return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
                 # reset
             elif ballposx >= canvasWidth - ballWidth:
                 print(roundstart)
-                score[1] += 1
+                score[0] += 1
                 (p1currentposy, p2currentposy, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
                 roundstart = True
                 return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
