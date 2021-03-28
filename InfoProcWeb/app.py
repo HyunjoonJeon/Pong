@@ -22,7 +22,7 @@ class ServerConsole():
         self.sock.bind(("0.0.0.0", self.localPort))
         self.playerCount = 0 #number of players in the game (MAX 2)
         self.connectQueue = queue.Queue() #create a queue system
-        self.currentThreads = [(), ()] #list with top two addresses
+        self.currentThreads = [[], []] #list with top two addresses
         self.currentVals = ["0", "0"] #list with most recent values
         self.playerdisconnect = [False, False] #list with disconnecting players
         print("UDP Server up and listening")
@@ -39,7 +39,7 @@ class ServerConsole():
     def UDPdisconnect(self, Client, address , threadCount):
         self.playerCount -= 1
         self.currentVals[threadCount-1] = "0"
-        self.currentThreads[threadCount-1] = ()
+        self.currentThreads[threadCount-1] = []
         if not self.connectQueue.empty():
             address = self.connectQueue.get()
             newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -50,7 +50,7 @@ class ServerConsole():
             primary = threading.Thread(target=self.UDPthread, args=[newSock, address, threadCount])
             primary.start()
             self.playerCount += 1
-            self.currentThreads[threadCount - 1] = (newSock, address)
+            self.currentThreads[threadCount - 1] = [newSock, address]
 
     def UDPreceive(self, Client, address , threadCount):
         while True:
@@ -78,7 +78,7 @@ class ServerConsole():
         ballDirectionY = 0
         while True:
             time.sleep(0.1)
-            if self.currentVals[0] and self.currentVals[1] != "0": #list not empty
+            if (self.currentVals[0] != "0") and (self.currentVals[1] != "0"): #list not empty
                 p1currentspd = float(self.currentVals[0][2: -1])/6
                 p2currentspd =float(self.currentVals[1][2: -1])/6
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
@@ -89,16 +89,16 @@ class ServerConsole():
                 if roundstart:
                     time.sleep(2)
                 if over:
-                    if score[0] == 5:
-                        client, address = self.currentVals[0]
-                        self.UDPdisconnect(client, address, 1)
+                    if score[0] == 2:
+                        clientdata = self.currentThreads[0]
+                        self.UDPdisconnect(clientdata[0], clientdata[1], 1)
                         self.currentVals[0] = "0"
                         self.UDPreset(0, 0)
                         roundstart = True
                         over = False
-                    elif score[1] == 5:
-                        client, address = self.currentVals[1]
-                        self.UDPdisconnect(client, address, 2)
+                    elif score[1] == 2:
+                        clientdata = self.currentThreads[1]
+                        self.UDPdisconnect(clientdata[0], clientdata[1], 2)
                         self.currentVals[1] = "0"
                         self.UDPreset(0, 0)
                         roundstart = True
@@ -196,7 +196,7 @@ class ServerConsole():
                     ballDirectionX = 3
 					#beep1.play()
 
-        if (score[0] ==5) or (score[1] == 5):
+        if (score[0] ==2) or (score[1] == 2):
             over = True
 
         return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
