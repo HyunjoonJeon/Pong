@@ -208,10 +208,10 @@ class ServerConsole():
         client2 = self.currentThreads[1]
         self.UDPsend(client1[0], client1[1], str(p1score))
         self.UDPsend(client1[0], client1[1], str(p2score+6))
-        self.UDPsend(client1[0], client1[1], str('x'))
+        self.UDPsend(client1[0], client1[1], 'x')
         self.UDPsend(client2[0], client2[1], str(p2score))
         self.UDPsend(client2[0], client2[1], str(p1score+6))
-        self.UDPsend(client2[0], client2[1], str('x'))
+        self.UDPsend(client2[0], client2[1], 'x')
         ballposx = 691
         ballposy = 491
         return (p1currentposy, p2currentposy, ballposx, ballposy, score)
