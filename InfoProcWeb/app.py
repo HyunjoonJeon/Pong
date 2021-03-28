@@ -22,7 +22,8 @@ class ServerConsole():
         self.sock.bind(("0.0.0.0", self.localPort))
         self.playerCount = 0 #number of players in the game (MAX 2)
         self.connectQueue = queue.Queue() #create a queue system
-        self.currentThreads = [[], []] #list with top two addresses
+        self.currentThreads = [ () , () ]
+        #list with top two addresses
         self.currentVals = ["0", "0"] #list with most recent values
         self.playerdisconnect = [False, False] #list with disconnecting players
         print("UDP Server up and listening")
@@ -39,7 +40,7 @@ class ServerConsole():
     def UDPdisconnect(self, Client, address , threadCount):
         self.playerCount -= 1
         self.currentVals[threadCount-1] = "0"
-        self.currentThreads[threadCount-1] = []
+        self.currentThreads[threadCount-1] = ()
         if not self.connectQueue.empty():
             address = self.connectQueue.get()
             newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -50,7 +51,7 @@ class ServerConsole():
             primary = threading.Thread(target=self.UDPthread, args=[newSock, address, threadCount])
             primary.start()
             self.playerCount += 1
-            self.currentThreads[threadCount - 1] = [newSock, address]
+            self.currentThreads[threadCount - 1] = (newSock, address)
 
     def UDPreceive(self, Client, address , threadCount):
         while True:
