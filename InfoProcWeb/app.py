@@ -26,6 +26,7 @@ class ServerConsole():
         #list with top two addresses
         self.currentVals = ["0", "0"] #list with most recent values
         self.playerdisconnect = [False, False] #list with disconnecting players
+        self.scores = [0, 0]
         print("UDP Server up and listening")
         tcal = threading.Thread(target=self.UDPcalculate, args=[])
         tcal.start()
@@ -34,8 +35,10 @@ class ServerConsole():
         print("Thread " + str(threadCount) + " started")
         t1 = threading.Thread(target=self.UDPreceive, args=[Client, address, threadCount])
         t1.start()
-        t2 = threading.Thread(target=self.UDPsend, args=[Client, address, t1, threadCount])
-        t2.start()
+        if threadCount == 1:
+            self.UDPsend(Client, address, 'h')
+        elif threadCount == 2:
+            self.UDPsend(Client, address, 'a')
 
     def UDPdisconnect(self, Client, address , threadCount):
         self.playerCount -= 1
@@ -62,7 +65,7 @@ class ServerConsole():
             if "{}".format(data) == "b'd'" or self.playerdisconnect[threadCount - 1] == True:
                 print(f"killing thread {threadCount} UDPreceive")
                 self.playerdisconnect[threadCount - 1] = False
-                self.UDPdisconnect(Client, address , threadCount)
+                self.UDPdisconnect(Client, address, threadCount)
                 return
             else:
                 self.currentVals[threadCount-1] = "{}".format(data)
@@ -201,20 +204,21 @@ class ServerConsole():
         print("I am resetting")
         p2currentposy = 215
         score = [p1score,p2score]
+        client1 = self.currentThreads[0]
+        client2 = self.currentThreads[1]
+        self.UDPsend(client1[0], client1[1], p1score)
+        self.UDPsend(client1[0], client1[1], p2score+5)
+        self.UDPsend(client1[0], client1[1], p2score)
+        self.UDPsend(client1[0], client1[1], p1score+5)
         ballposx = 691
         ballposy = 491
         return (p1currentposy, p2currentposy, ballposx, ballposy, score)
         
                             
-    def UDPsend(self, Client, address, t1, threadCount, msgFromServer="x"):
-        while True:
-            #msgFromServer = input()
-            bytesToSend = str.encode(msgFromServer)
-            Client.sendto(bytesToSend, address)
-            time.sleep(3)
-            if not t1.is_alive():
-                print(f"killing thread {threadCount} UDPsend")
-                return
+    def UDPsend(self, Client, address, msgFromServer):
+        bytesToSend = str.encode(msgFromServer)
+        Client.sendto(bytesToSend, address)
+
 
     def UDPserver(self):
         while True:
