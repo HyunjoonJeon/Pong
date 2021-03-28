@@ -61,7 +61,7 @@ class ServerConsole():
             print("Client IP Address:{}".format(addr))
             if "{}".format(data) == "b'd'" or self.playerdisconnect[threadCount - 1] == True:
                 print(f"killing thread {threadCount} UDPreceive")
-                self.playerdisconnect[threadCount - 1]
+                self.playerdisconnect[threadCount - 1] = False
                 self.UDPdisconnect(Client, address , threadCount)
                 return
             else:
@@ -91,15 +91,13 @@ class ServerConsole():
                     time.sleep(2)
                 if over:
                     if score[0] == 2:
-                        clientdata = self.currentThreads[0]
-                        self.UDPdisconnect(clientdata[0], clientdata[1], 1)
+                        self.playerdisconnect[0] = True
                         self.currentVals[0] = "0"
                         self.UDPreset(0, 0)
                         roundstart = True
                         over = False
                     elif score[1] == 2:
-                        clientdata = self.currentThreads[1]
-                        self.UDPdisconnect(clientdata[0], clientdata[1], 2)
+                        self.playerdisconnect[1] = True
                         self.currentVals[1] = "0"
                         self.UDPreset(0, 0)
                         roundstart = True
