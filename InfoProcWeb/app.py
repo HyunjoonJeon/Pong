@@ -24,6 +24,7 @@ class ServerConsole():
         self.connectQueue = queue.Queue() #create a queue system
         self.currentThreads = [(), ()] #list with top two addresses
         self.currentVals = ["0", "0"] #list with most recent values
+        self.playerdisconnect = [False, False] #list with disconnecting players
         print("UDP Server up and listening")
         tcal = threading.Thread(target=self.UDPcalculate, args=[])
         tcal.start()
@@ -57,8 +58,9 @@ class ServerConsole():
             assert address == addr
             print("Message from Client:{}".format(data))
             print("Client IP Address:{}".format(addr))
-            if "{}".format(data) == "b'd'":
+            if "{}".format(data) == "b'd'" or self.playerdisconnect[threadCount - 1] == True:
                 print(f"killing thread {threadCount} UDPreceive")
+                self.playerdisconnect[threadCount - 1]
                 self.UDPdisconnect(Client, address , threadCount)
                 return
             else:
@@ -86,6 +88,22 @@ class ServerConsole():
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
                 if roundstart:
                     time.sleep(2)
+                if over:
+                    if score[0] == 5:
+                        client, address = self.currentVals[0]
+                        self.UDPdisconnect(client, address, 1)
+                        self.currentVals[0] = "0"
+                        self.UDPreset(0, 0)
+                        roundstart = True
+                        over = False
+                    elif score[1] == 5:
+                        client, address = self.currentVals[1]
+                        self.UDPdisconnect(client, address, 2)
+                        self.currentVals[1] = "0"
+                        self.UDPreset(0, 0)
+                        roundstart = True
+                        over = False
+                        
 
     def UDPupdate(self, p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart):
         canvasWidth = 1400
