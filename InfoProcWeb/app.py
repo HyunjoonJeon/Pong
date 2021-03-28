@@ -38,9 +38,11 @@ class ServerConsole():
         if threadCount == 1:
             self.UDPsend(Client, address, 'h')
             self.UDPsend(Client, address, 'c')
+            self.UDPsend(Client, address, 'x')
         elif threadCount == 2:
             self.UDPsend(Client, address, 'a')
             self.UDPsend(Client, address, 'c')
+            self.UDPsend(Client, address, 'x')
 
     def UDPdisconnect(self, Client, address , threadCount):
         self.playerCount -= 1
