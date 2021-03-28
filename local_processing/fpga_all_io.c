@@ -32,9 +32,10 @@ alt_u8 led;
 int level;
 int filter_slot=0;
 double filter[5]={0,0,0,0,0};
-static alt_u8 segments[16] = {
-    0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x2, 0x78, 0x0, 0x18, /* 0-9 */
-    0x8, 0x3, 0x46, 0x21, 0x6, 0xE };                      	  /* a-f */
+static alt_u8 segments[20] = {
+    0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x2, 0x78, 0x0, 0x18, 		  /* 0-9 */
+    0x3F, 0x8, 0x9, 0x47, 0x71, 0x6, 0x3F};						  /* "-" and A H L - E */
+
 //The decimal point still shows up, it can probably be handled later
 
 
@@ -82,6 +83,26 @@ static void sevenseg_turn_off()
   IOWR_ALTERA_AVALON_PIO_DATA(HEX3_BASE, 0xffff);
   IOWR_ALTERA_AVALON_PIO_DATA(HEX4_BASE, 0xffff);
   IOWR_ALTERA_AVALON_PIO_DATA(HEX5_BASE, 0xffff);
+}
+
+
+static void sevenseg_say_hello()
+{
+  sevenseg_set_hex4(12);
+  sevenseg_set_hex3(15);
+  sevenseg_set_hex2(13);
+  sevenseg_set_hex1(13);
+  sevenseg_set_hex0(0);
+}
+
+static void sevenseg_home_player()
+{
+	sevenseg_set_hex5(12);
+}
+
+static void sevenseg_away_player()
+{
+	sevenseg_set_hex5(11);
 }
 
 void led_write(alt_u8 led_pattern) {
@@ -157,10 +178,18 @@ int main() {
 
     timer_init(sys_timer_isr);
 
+    sevenseg_say_hello();
+    usleep(300000);
+    sevenseg_home_player();
+    usleep(300000);
+    sevenseg_away_player();
+    usleep(900000);
+
     sevenseg_turn_off();		//turn off display
-    //usleep(900000);			//sleep for about 3 seconds
+    usleep(900000);				//sleep for about 3 seconds
     sevenseg_set_hex2(0);		//home player
     sevenseg_set_hex0(0);		//away player
+    sevenseg_set_hex1(10);		//dash in between the numbers
 
 	printf("Running..\n");
 	FILE* fp;
@@ -169,32 +198,22 @@ int main() {
 	// create file pointer to jtag_uart port
 	fp = fopen ("/dev/jtag_uart", "r+");
 
-	/*for(int i = 0; i < 10; i++)
+	for(int i = 0; i <= 16; i++)
 	{
 		sevenseg_set_hex0(i);
+		sevenseg_set_hex2(i);
 		usleep(300000);		//sleep for about one second
-	}*/
+	}
 
+	sevenseg_set_hex2(0);		//home player
+	sevenseg_set_hex0(0);		//away player
+	sevenseg_set_hex1(10);		//dash in between the numbers
+
+	prompt = 'x';
 	if (fp) {
 		while (prompt != 's')
 		{
 			prompt = getc(fp);
-			/*prompt = 'x';
-			if(prompt == 'x')
-			{
-				alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
-				alt_printf("Raw data: %x \n", x_read);
-				convert_read(x_read, & level, & led);
-				filtered_data = filtering(x_read);
-				printf("Filtered data: <--> %f <-->\n", filtered_data);
-			}
-			else if (prompt == 'y')
-			{
-				alt_up_accelerometer_spi_read_y_axis(acc_dev, & y_read);
-				alt_printf("Raw data: <--> %x <-->\n ", y_read);
-				convert_read(y_read, & level, & led);
-			}else alt_printf("Raw data: <--> <-->\n");
-			*/
 
 			switch(prompt)
 			{
@@ -205,6 +224,7 @@ int main() {
 					convert_read(x_read, & level, & led);
 					filtered_data = filtering(x_read);
 					printf("Filtered data: <--> %f <-->\n", filtered_data);
+					alt_printf("==========\nReceiving x-axis update command \n==========\n");
 					break;
 				}
 				case 'y':
@@ -212,56 +232,90 @@ int main() {
 					alt_up_accelerometer_spi_read_y_axis(acc_dev, & y_read);
 					alt_printf("Raw data: <--> %x <-->\n ", y_read);
 					convert_read(y_read, & level, & led);
+					alt_printf("==========\nReceiving x-axis update command \n==========\n");
 					break;
 				}
 				case '1':	//this is for the home player
 				{
 					sevenseg_set_hex2(1);
+					alt_printf("==========\nReceiving score update (home) command \n==========\n");
 					break;
 				}
 				case '2':
 				{
 					sevenseg_set_hex2(2);
+					alt_printf("==========\nReceiving score update (home) command \n==========\n");
 					break;
 				}
 				case '3':
 				{
 					sevenseg_set_hex2(3);
+					alt_printf("==========\nReceiving score update (home) command \n==========\n");
 					break;
 				}
 				case '4':
 				{
 					sevenseg_set_hex2(4);
+					alt_printf("==========\nReceiving score update (home) command \n==========\n");
 					break;
 				}
 				case '5':
 				{
 					sevenseg_set_hex2(5);
+					alt_printf("==========\nReceiving score update (home) command \n==========\n");
 					break;
 				}
 				case '6':	//this is for the away player
 				{
-					sevenseg_set_hex2(1);
+					sevenseg_set_hex0(1);
+					alt_printf("==========\nReceiving score update (away) command \n==========\n");
 					break;
 				}
 				case '7':
 				{
-					sevenseg_set_hex2(2);
+					sevenseg_set_hex0(2);
+					alt_printf("==========\nReceiving score update (away) command \n==========\n");
 					break;
 				}
 				case '8':
 				{
-					sevenseg_set_hex2(3);
+					sevenseg_set_hex0(3);
+					alt_printf("==========\nReceiving score update (away) command \n==========\n");
 					break;
 				}
 				case '9':
 				{
-					sevenseg_set_hex2(4);
+					sevenseg_set_hex0(4);
+					alt_printf("========== \n Receiving a score update (away) command \n ========= \n");
+
 					break;
 				}
 				case '0':
 				{
-					sevenseg_set_hex2(5);
+					sevenseg_set_hex0(5);
+					alt_printf("==========\nReceiving score update (away) command \n==========\n");
+					break;
+				}
+				case'c':
+				{
+					sevenseg_turn_off();		//turn off display
+					//usleep(900000);			//sleep for about 3 seconds
+					sevenseg_set_hex2(0);		//home player
+					sevenseg_set_hex0(0);		//away player
+					sevenseg_set_hex1(10);		//dash in between the numbers
+					alt_printf("==========\nReceiving clean command \n==========\n");
+					break;
+				}
+				case 'h':
+				{
+					sevenseg_home_player();
+					alt_printf("==========\nReceiving home player command \n==========\n");
+					break;
+				}
+				case 'a':
+				{
+					sevenseg_away_player();
+					alt_printf("==========\nReceiving away player command \n==========\n");
 					break;
 				}
 				default:
