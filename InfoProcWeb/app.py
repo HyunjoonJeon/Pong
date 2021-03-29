@@ -101,14 +101,14 @@ class ServerConsole():
                 if roundstart:
                     time.sleep(2)
                 if over:
-                    if score[1] == 2:
+                    if score[1] == 5:
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
                         self.playerdisconnect[0] = True
                         self.currentVals[0] != "0"
                         self.zeroes = True
                         roundstart = True
                         over = False
-                    elif score[0] == 2:
+                    elif score[0] == 5:
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
                         self.currentVals[1] != "0"
                         self.playerdisconnect[1] = True
@@ -215,7 +215,7 @@ class ServerConsole():
                     ballDirectionX = 3
 					#beep1.play()
 
-        if (score[0] ==2) or (score[1] == 2):
+        if (score[0] == 5) or (score[1] == 5):
             over = True
 
         return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
