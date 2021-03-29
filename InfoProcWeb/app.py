@@ -45,10 +45,11 @@ class ServerConsole():
             self.UDPsend(Client, address, 'x')
 
     def UDPdisconnect(self, Client, address , threadCount):
+        print("UDP Disconenct Called")
         self.playerCount -= 1
         self.currentVals[threadCount-1] = "0"
         self.currentThreads[threadCount-1] = ()
-        if not self.connectQueue.empty():
+        if self.connectQueue.empty():
             address = self.connectQueue.get()
             newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
