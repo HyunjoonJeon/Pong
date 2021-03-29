@@ -31,17 +31,15 @@ body{
             // The callback function is invoked whenever the server emits data
             // to the client. The data is then displayed in the "Received"
             // section of the page.
-            socket.on('my_response', function(msg, cb) {
+            socket.on('my_response', function(msg) {
                 p1currentposy = parseInt(msg.p1currentposy);
-		p2currentposy = parseInt(msg.p2currentposy);
-		ballposx = parseInt(msg.ballposx);
-		ballposy = parseInt(msg.ballposy);
-		p1score = parseInt(msg.score[0]);
-		p2score = parseInt(msg.score[1]);
-		serverOver = msg.over == 'true';
-		console.log({ballposx, ballposy});
-                if (cb)
-                    cb();
+		        p2currentposy = parseInt(msg.p2currentposy);
+		        ballposx = parseInt(msg.ballposx);
+		        ballposy = parseInt(msg.ballposy);
+		        p1score = parseInt(msg.score[0]);
+		        p2score = parseInt(msg.score[1]);
+		        serverOver = msg.over == 'true';
+		        console.log({ballposx, ballposy});
             });
 
             // Interval function that tests message latency by sending a "ping"
