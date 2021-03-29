@@ -88,7 +88,7 @@ class ServerConsole():
             time.sleep(0.1)
             if (self.currentVals[0] != "0") and (self.currentVals[1] != "0"): #list not empty
                 p1currentspd = float(self.currentVals[0][2: -1])/6
-                p2currentspd =float(self.currentVals[1][2: -1])/6
+                p2currentspd = float(self.currentVals[1][2: -1])/6
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
                 print(ballposx, ballposy, ballDirectionX, ballDirectionY)
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
@@ -96,13 +96,13 @@ class ServerConsole():
                     time.sleep(2)
                 if over:
                     if score[1] == 2:
-                        self.playerdisconnect[0] = True
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
+                        self.playerdisconnect[0] = True
                         roundstart = True
                         over = False
                     elif score[0] == 2:
-                        self.playerdisconnect[1] = True
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
+                        self.playerdisconnect[1] = True
                         roundstart = True
                         over = False
                         
@@ -122,6 +122,10 @@ class ServerConsole():
             if ballposx <= 0:
                 print(roundstart)
                 score[1] += 1
+                client1 = self.currentThreads[0]
+                client2 = self.currentThreads[1]
+                self.UDPsend(client1[0], client1[1], 'y')
+                self.UDPsend(client2[0], client2[1], 'x')
                 (p1currentposy, p2currentposy, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
                 roundstart = True
                 return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
@@ -129,6 +133,10 @@ class ServerConsole():
             elif ballposx >= canvasWidth - ballWidth:
                 print(roundstart)
                 score[0] += 1
+                client1 = self.currentThreads[0]
+                client2 = self.currentThreads[1]
+                self.UDPsend(client1[0], client1[1], 'x')
+                self.UDPsend(client2[0], client2[1], 'y')
                 (p1currentposy, p2currentposy, ballposx, ballposy, score) = self.UDPreset(score[0], score[1])
                 roundstart = True
                 return p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart
