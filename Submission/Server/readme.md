@@ -19,4 +19,4 @@ To start the server, run `python3 app.py`.
 If it is successful, you should see a "UDP Server Up and Listening" Message and also be able to access the website on `YOURIP:5000`
 
 
-Pong.js code is heavily based off Gabriel Dubé's Codepen "Pong with Javascript" - https://codepen.io/gdube/pen/JybxxZ
+Pong.js code is modified based off Gabriel Dubé's Codepen "Pong with Javascript" - https://codepen.io/gdube/pen/JybxxZ
