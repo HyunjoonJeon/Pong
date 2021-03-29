@@ -87,7 +87,7 @@ class ServerConsole():
         ballDirectionY = 0
         while True:
             time.sleep(1/10)
-            if (self.currentThreads[0] != ()) and (self.currentThreads[1] != ()): #list not empty
+            if (self.currentVals[0] != "0") and (self.currentVals[1] != "0"): #list not empty
                 p1currentspd = float(self.currentVals[0][2: -1])/6
                 p2currentspd =float(self.currentVals[1][2: -1])/6
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
@@ -99,14 +99,15 @@ class ServerConsole():
                     if score[1] == 2:
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
                         self.playerdisconnect[0] = True
+                        self.currentVals[0] != "0"
                         roundstart = True
                         over = False
                     elif score[0] == 2:
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
+                        self.currentVals[1] != "0"
                         self.playerdisconnect[1] = True
                         roundstart = True
                         over = False
-                        
 
     def UDPupdate(self, p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart):
         canvasWidth = 1400
