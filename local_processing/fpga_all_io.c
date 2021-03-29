@@ -1,18 +1,3 @@
-/* "Hello World" example.
- *
- * This example prints 'Hello from Nios II' to the STDOUT stream. It runs on
- * the Nios II 'standard', 'full_featured', 'fast', and 'low_cost' example
- * designs. It runs with or without the MicroC/OS-II RTOS and requires a STDOUT
- * device in your system's hardware.
- * The memory footprint of this hosted application is ~69 kbytes by default
- * using the standard reference design.
- *
- * For a reduced footprint version of this template, and an explanation of how
- * to reduce the memory footprint for a given application, see the
- * "small_hello_world" template.
- *
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -23,6 +8,7 @@
 #include "altera_avalon_pio_regs.h"
 #include "sys/alt_irq.h"
 #include <stdlib.h>
+#include <sys/time.h>
 
 #define OFFSET -32
 #define PWM_PERIOD 16
@@ -34,7 +20,7 @@ int filter_slot=0;
 double filter[5]={0,0,0,0,0};
 static alt_u8 segments[20] = {
     0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x2, 0x78, 0x0, 0x18, 		  /* 0-9 */
-    0x3F, 0x8, 0x9, 0x47, 0x71, 0x6, 0x3F};						  /* "-" and A H L - E */
+    0x3F, 0x8, 0x9, 0x47, 0x71, 0x6, 0x3F};						  	  /* "-" A H L "empty" E */
 
 //The decimal point still shows up, it can probably be handled later
 
@@ -176,6 +162,7 @@ int main() {
         return 1;
     }
 
+    //int k = settimeofday();
     timer_init(sys_timer_isr);
 
     sevenseg_say_hello();
@@ -203,11 +190,14 @@ int main() {
 		sevenseg_set_hex0(i);
 		sevenseg_set_hex2(i);
 		usleep(300000);		//sleep for about one second
+		//alt_printf("%d\n\n\n\n", gettimeofday());
 	}
 
 	sevenseg_set_hex2(0);		//home player
 	sevenseg_set_hex0(0);		//away player
 	sevenseg_set_hex1(10);		//dash in between the numbers
+
+
 
 	prompt = 'x';
 	if (fp) {
@@ -220,19 +210,22 @@ int main() {
 				case 'x':
 				{
 					alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
-					alt_printf("Raw data: %x \n", x_read);
+					//alt_printf("Raw data: %x \n", x_read);
 					convert_read(x_read, & level, & led);
 					filtered_data = filtering(x_read);
-					printf("Filtered data: <--> %f <-->\n", filtered_data);
-					alt_printf("==========\nReceiving x-axis update command \n==========\n");
+					printf("Raw data: <--> %f <-->\n", filtered_data);
+					alt_printf("==========\nReceiving x-axis update command ");
+					//alt_printf("\n%d", gettimeofday());
 					break;
 				}
 				case 'y':
 				{
 					alt_up_accelerometer_spi_read_y_axis(acc_dev, & y_read);
-					alt_printf("Raw data: <--> %x <-->\n ", y_read);
+					//alt_printf("Raw data: <--> %x <-->\n ", y_read);
 					convert_read(y_read, & level, & led);
-					alt_printf("==========\nReceiving x-axis update command \n==========\n");
+					filtered_data = filtering(y_read);
+					printf("Raw data: <--> %f <-->\n", filtered_data);
+					alt_printf("==========\nReceiving y-axis update command \n==========\n");
 					break;
 				}
 				case '1':	//this is for the home player
@@ -286,7 +279,7 @@ int main() {
 				case '9':
 				{
 					sevenseg_set_hex0(4);
-					alt_printf("========== \n Receiving a score update (away) command \n ========= \n");
+					alt_printf("==========\nReceiving a score update (away) command \n==========\n");
 
 					break;
 				}
@@ -296,7 +289,7 @@ int main() {
 					alt_printf("==========\nReceiving score update (away) command \n==========\n");
 					break;
 				}
-				case'c':
+				case'c':	//this is the clean command
 				{
 					sevenseg_turn_off();		//turn off display
 					//usleep(900000);			//sleep for about 3 seconds
@@ -306,13 +299,13 @@ int main() {
 					alt_printf("==========\nReceiving clean command \n==========\n");
 					break;
 				}
-				case 'h':
+				case 'h':	//this is an indicator for the home player
 				{
 					sevenseg_home_player();
 					alt_printf("==========\nReceiving home player command \n==========\n");
 					break;
 				}
-				case 'a':
+				case 'a':	//this is an indicator for the away player
 				{
 					sevenseg_away_player();
 					alt_printf("==========\nReceiving away player command \n==========\n");
