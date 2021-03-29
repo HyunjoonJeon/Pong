@@ -86,10 +86,10 @@ class ServerConsole():
         ballDirectionX = 0
         ballDirectionY = 0
         while True:
-            time.sleep(1/30)
-            if (self.currentVals[0] != "0") and (self.currentVals[1] != "0"): #list not empty
-                p1currentspd = float(self.currentVals[0][2: -1])/18
-                p2currentspd =float(self.currentVals[1][2: -1])/18
+            time.sleep(1/10)
+            if (self.currentThreads[0] != ()) and (self.currentThreads[1] != ()): #list not empty
+                p1currentspd = float(self.currentVals[0][2: -1])/6
+                p2currentspd =float(self.currentVals[1][2: -1])/6
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
                 print(ballposx, ballposy, ballDirectionX, ballDirectionY)
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
@@ -113,7 +113,7 @@ class ServerConsole():
         canvasHeight = 1000
         ballWidth = 18
         ballHeight = 18
-        ballSpeed = 4 
+        ballSpeed = 12 
         paddleWidth = 18
         paddleHeight = 70
         p1currentposx = 150
