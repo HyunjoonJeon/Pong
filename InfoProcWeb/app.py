@@ -45,10 +45,11 @@ class ServerConsole():
             self.UDPsend(Client, address, 'x')
 
     def UDPdisconnect(self, Client, address , threadCount):
+        print("UDP Disconenct Called")
         self.playerCount -= 1
         self.currentVals[threadCount-1] = "0"
         self.currentThreads[threadCount-1] = ()
-        if not self.connectQueue.empty():
+        if self.connectQueue.empty():
             address = self.connectQueue.get()
             newSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -85,10 +86,10 @@ class ServerConsole():
         ballDirectionX = 0
         ballDirectionY = 0
         while True:
-            time.sleep(0.1)
+            time.sleep(1/30)
             if (self.currentVals[0] != "0") and (self.currentVals[1] != "0"): #list not empty
-                p1currentspd = float(self.currentVals[0][2: -1])/6
-                p2currentspd = float(self.currentVals[1][2: -1])/6
+                p1currentspd = float(self.currentVals[0][2: -1])/18
+                p2currentspd =float(self.currentVals[1][2: -1])/18
                 p1currentposy, p2currentposy, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart = self.UDPupdate(p1currentposy, p2currentposy, p1currentspd, p2currentspd, ballposx, ballposy, ballDirectionX, ballDirectionY, score, over, roundstart)
                 print(ballposx, ballposy, ballDirectionX, ballDirectionY)
                 socketio.emit('my_response',{'p1currentposy': p1currentposy, 'p2currentposy': p2currentposy, 'ballposx': ballposx, 'ballposy': ballposy, 'score': [score[0], score[1]], 'over': over}, broadcast = True)
@@ -112,7 +113,7 @@ class ServerConsole():
         canvasHeight = 1000
         ballWidth = 18
         ballHeight = 18
-        ballSpeed = 12 
+        ballSpeed = 4 
         paddleWidth = 18
         paddleHeight = 70
         p1currentposx = 150
