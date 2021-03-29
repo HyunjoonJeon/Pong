@@ -25,6 +25,7 @@ class ServerConsole():
         self.currentThreads = [ () , () ]
         #list with top two addresses
         self.currentVals = ["0", "0"] #list with most recent values
+        self.zeroes = False
         self.playerdisconnect = [False, False] #list with disconnecting players
         self.scores = [0, 0]
         print("UDP Server up and listening")
@@ -35,6 +36,7 @@ class ServerConsole():
         print("Thread " + str(threadCount) + " started")
         t1 = threading.Thread(target=self.UDPreceive, args=[Client, address, threadCount])
         t1.start()
+        self.zeroes = False
         if threadCount == 1:
             self.UDPsend(Client, address, 'h')
             self.UDPsend(Client, address, 'c')
@@ -86,6 +88,9 @@ class ServerConsole():
         ballDirectionX = 0
         ballDirectionY = 0
         while True:
+            if (self.zeroes == True):
+                self.currentVals[0] = "0"
+                self.currentVals[1] = "0"
             time.sleep(1/10)
             if (self.currentVals[0] != "0") and (self.currentVals[1] != "0"): #list not empty
                 p1currentspd = float(self.currentVals[0][2: -1])/6
@@ -100,12 +105,14 @@ class ServerConsole():
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
                         self.playerdisconnect[0] = True
                         self.currentVals[0] != "0"
+                        self.zeroes = True
                         roundstart = True
                         over = False
                     elif score[0] == 2:
                         p1currentposy, p2currentposy, ballposx, ballposy, score = self.UDPreset(0, 0)
                         self.currentVals[1] != "0"
                         self.playerdisconnect[1] = True
+                        self.zeroes = True
                         roundstart = True
                         over = False
 
